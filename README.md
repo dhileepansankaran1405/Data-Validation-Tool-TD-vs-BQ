@@ -1,5 +1,5 @@
-# Data-Validation-Tool-TD-vs-BQ
-Enterprise Data Migration &amp; Validation
+# Data-Validation-Tool-TD-vs-BQ 
+Enterprise Data Validation Framework using Data Validation Tool (DVT) Approach for Teradata vs Google Bigquery
 
 The Data Validation Tool is an open sourced Python CLI tool based on the Ibis framework that compares data source tables with multi-leveled validation functions.
 
