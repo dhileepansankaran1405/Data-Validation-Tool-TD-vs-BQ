@@ -23,3 +23,21 @@ Architecture & Tech Stack
 
 Key Metrics Captured
 The framework generates a structured log including run_id, status (PASS/FAIL), source_count, target_count, and difference_count, enabling immediate surface-level identification of migration errors.
+
+
+**Architecture Diagram:**
+
+<img width="975" height="699" alt="image" src="https://github.com/user-attachments/assets/fcb6fb38-e614-4d3d-a12a-4d302894e991" />
+
+**Inventory CSV** → Config Compiler Script Reads mappings &  generates DVT compliant YAML blueprints.
+
+**Secret Manager** → Compiler Script Supplies secure credentials dynamically at runtime.
+
+**Local DVT YAML Files** → GCS Bucket Synced using gsutil for Cloud Composer access.
+
+**Cloud Composer (Airflow)** → GKE Pod Spins up transient pods to execute validation tasks.
+
+**Teradata** → GKE Pod → BigQuery Performs data validation and loads results.
+
+**BigQuery Audit Table** → Looker Studio Pipes audit metrics for visualization and monitoring.
+
