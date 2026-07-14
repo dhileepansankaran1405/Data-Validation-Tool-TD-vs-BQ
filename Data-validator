@@ -1,1 +1,105 @@
 
+
+from datetime import datetime, timedelta
+from airflow import DAG
+from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
+from kubernetes.client import models as k8s
+
+# ==========================================
+# CONFIGURATION MATRIX (Easily scale up rows)
+# ==========================================
+# For production, you can replace this hardcoded list with a loop that reads a JSON config file from GCS.
+TABLES_TO_VALIDATE = [
+    {
+        "source_table": "Finance.Transactions",
+        "target_table": "finance_dataset.transactions",
+        "primary_key": "transaction_id",
+        "filter_condition": "transaction_date >= '2025-01-01'",  # Chunking data to prevent spool space exhaust
+        "validation_type": "row" # Options: schema, column, row
+    },
+    {
+        "source_table": "RETAIL.CUSTOMER_DIM",
+        "target_table": "retail_dataset.customer_dim",
+        "primary_key": "customer_id",
+        "filter_condition": "1=1",  # Static/smaller tables can be validated entirely
+        "validation_type": "column"
+    }
+]
+
+# Central variables
+DVT_IMAGE = "us-central1-docker.pkg.dev/your-gcp-project/dvt-repo/data-validation:latest"
+GCP_CONN_PROJECT = "your-gcp-project-id"
+
+# Secure credentials using Airflow Variables or Environment Secrets
+# Teradata connection string constructed using DVT formatting
+TERADATA_CONN_STRING = '{"source_type":"Teradata","host":"10.x.x.x","user":"migration_user","password":"SecurePassword"}'
+
+default_args = {
+    'owner': 'data-migration-team',
+    'depends_on_past': False,
+    'start_date': datetime(2026, 1, 1),
+    'email_on_failure': True,
+    'email': ['migration-alerts@yourcompany.com'],
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+
+with DAG(
+    'enterprise_teradata_bq_validation_scale',
+    default_args=default_args,
+    description='Automated scaling framework for Teradata to BigQuery data validation via DVT',
+    schedule_interval=None,  # Triggered manually or post-migration pipeline completion
+    catchup=False,
+    max_active_runs=3,        # Caps parallel DAG execution pipelines
+) as dag:
+
+    # Loop through the table matrix to dynamically generate parallel pod execution steps
+    for table_config in TABLES_TO_VALIDATE:
+        
+        # Format names safely for Kubernetes pod naming standards
+        sanitized_task_id = table_config["source_table"].replace(".", "-").replace("_", "-").lower()
+        
+        # Build command depending on validation type
+        if table_config["validation_type"] == "row":
+            dvt_command = [
+                "validate", "row",
+                "-sc", TERADATA_CONN_STRING,
+                "-tc", f'{{"source_type":"BigQuery","project_id":"{GCP_CONN_PROJECT}"}}',
+                "-tbls", f'{table_config["source_table"]}={table_config["target_table"]}',
+                "--primary-keys", table_config["primary_key"],
+                "--concat", "*",
+                "--filters", table_config["filter_condition"],
+                # Stream results straight to a BQ auditing table instead of stdout logs
+                "--output-handler", f'{{"type": "BigQuery", "table_id": "{GCP_CONN_PROJECT}.audit_dataset.dvt_execution_logs"}}'
+            ]
+        else: # Defaulting to aggregated column math for structural check
+            dvt_command = [
+                "validate", "column",
+                "-sc", TERADATA_CONN_STRING,
+                "-tc", f'{{"source_type":"BigQuery","project_id":"{GCP_CONN_PROJECT}"}}',
+                "-tbls", f'{table_config["source_table"]}={table_config["target_table"]}',
+                "--filters", table_config["filter_condition"],
+                "--output-handler", f'{{"type": "BigQuery", "table_id": "{GCP_CONN_PROJECT}.audit_dataset.dvt_execution_logs"}}'
+            ]
+
+        # Execute using GKE isolated pods
+        run_dvt_validation = KubernetesPodOperator(
+            task_id=f"validate-{sanitized_task_id}",
+            name=f"dvt-{sanitized_task_id}",
+            namespace="default",
+            image=DVT_IMAGE,
+            cmds=dvt_command,
+            # Assign workload resource guarantees to control concurrency footprints
+            container_resources=k8s.V1ResourceRequirements(
+                requests={"cpu": "1", "memory": "2Gi"},
+                limits={"cpu": "2", "memory": "4Gi"}
+            ),
+            # Automatically wipe pod footprint from GKE after success to keep cluster clean
+            is_delete_operator_pod=True,
+            get_logs=True
+        )
+
+        # In a fully dynamic scaling framework, these jobs run independently in parallel. 
+        # Airflow will scale cluster worker pods upward to meet the table inventory demand.
+        run_dvt_validation
+
