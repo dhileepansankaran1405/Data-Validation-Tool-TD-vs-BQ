@@ -1,5 +1,7 @@
 # Data-Validation-Tool-TD-vs-BQ 
 
+**Author:** Dhileepan Sankaran 
+
 Enterprise Data Validation Framework using Data Validation Tool (DVT) Approach for Teradata vs Google Bigquery
 
 This Enterprise data migration validation framework leverages code repository, reduces manual execution to deploy, scale an automated data validation pipeline, perform data validation & generate metrics report.
