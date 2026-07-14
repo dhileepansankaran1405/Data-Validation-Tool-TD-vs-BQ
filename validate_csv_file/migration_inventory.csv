@@ -1,0 +1,11 @@
+source_table,target_table,validation_type,primary_key,filter_condition
+FINANCE.TRANSACTIONS,finance_dataset.transactions,row,transaction_id,transaction_date >= '2026-01-01'
+RETAIL.CUSTOMER_DIM,retail_dataset.customer_dim,column,,
+HR.EMPLOYEES,hr_dataset.employees,row,employee_id,status = 'ACTIVE'
+MARKETING.CAMPAIGNS,marketing_dataset.campaigns,column,,marketing_year = 2026
+LOGISTICS.SHIPMENTS,logistics_dataset.shipments,row,tracking_number,destination_country = 'IN'
+SUPPLY_CHAIN.INVENTORY,supply_chain_dataset.inventory,column,,
+FINANCE.GL_BALANCES,finance_dataset.gl_balances,row,account_id,balance_date = '2026-06-30'
+ECOM.ORDER_ITEMS,ecommerce_dataset.order_items,row,order_item_id,order_created_at >= TIMESTAMP('2026-06-01 00:00:00')
+RETAIL.PRODUCT_CATALOG,retail_dataset.product_catalog,column,,is_discontinued = 0
+LOGISTICS.ORDER_MANIFESTS,logistics_dataset.order_manifests,row,"order_id,line_item_num",manifest_year = 2026
