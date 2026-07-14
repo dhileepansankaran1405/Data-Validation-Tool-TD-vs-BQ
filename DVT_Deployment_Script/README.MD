@@ -27,6 +27,14 @@ RUN pip install --upgrade pip
 # Pin explicit tool versions to ensure reproducible environments over multi-year migration projects
 RUN pip install "google-pyspark-data-validation[bigquery,teradata]==3.10.0"
 # pip install google-pso-data-validator[teradata]
+
+
+Execute the Build Pipeline
+Run these terminal statements to compile and push your execution image up to Google Cloud:
+Bash command
+chmod +x deploy_dvt.sh
+./deploy_dvt.sh
+
 # Enforce secure least-privilege runtime footprints by disabling root execution inside GKE
 RUN useradd -m -u 1001 dvtuser
 USER dvtuser
