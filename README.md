@@ -41,3 +41,17 @@ The framework generates a structured log including run_id, status (PASS/FAIL), s
 
 **BigQuery Audit Table** → Looker Studio Pipes audit metrics for visualization and monitoring.
 
+Stage	Description
+
+Inventory CSV → Compiler Script	Reads mappings and generates YAML configs.
+
+Secret Manager → Compiler Script	Supplies secure credentials dynamically.
+
+Local Configs → GCS Bucket	Uploads YAML blueprints for Composer tasks.
+
+Cloud Composer → Transient Pod	Executes validation jobs using uploaded configs.
+
+Teradata → GKE Pod → BigQuery	Performs data validation and loads results.
+
+BigQuery Audit Table → Looker Studio	Visualizes audit metrics and pipeline health.
+
