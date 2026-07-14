@@ -9,7 +9,7 @@ Update the DAG configuration for your use case (update PROJECT_ID, optional gcs 
 Upload it to the DAGs folder in your Composer environment
 Build Docker Image
 You will need to build a Docker image to be used by Kubernetes Pod Operator. In order to add
-Teradata or Oracle, you will need to customize the Dockerfile and add your
+Teradata, you will need to customize the Dockerfile and add your
 licensed utilities.
 ```
 export PROJECT_ID=<PROJECT-ID>
