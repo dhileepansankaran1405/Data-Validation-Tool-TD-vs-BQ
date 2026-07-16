@@ -1,0 +1,51 @@
+🚀 Initializing End-to-End BigQuery Data Validation Pipeline...
+✔️ Audit Mismatch Table verified: groovy-scarab-502011-g2.Finance.validation_mismatches_customer
+
+📊 Running Row Count checks...
+   Source Row Count: 1,000
+   Target Row Count: 999
+   Difference      : 1
+
+🔍 Running Duplicate PK checks...
+   Source Duplicate PK Rows: 0
+   Target Duplicate PK Rows: 0
+
+📐 Running Schema / Column Mismatch checks...
+   ✔️ Schemas Match Perfectly.
+
+🔗 Correlating Common Comparison Columns...
+   Intersecting columns evaluated for hash logic: 6 columns.
+
+⚡ Running Deep Row-Level Hashing and writing discrepancies...
+   ✔️ Processing Completed. Logged 1 mismatch records directly to `Finance.validation_mismatches_customer`
+
+=========================================================
+📋 VALIDATION RUN SUMMARY
+=========================================================
+  📅 Execution Time     : 2026-07-16 09:55:44 (UTC)
+  📐 Schema Drift       : None (Clean)
+  👥 Duplicates (Src)   : 0
+  👥 Duplicates (Tgt)   : 0
+  ❌ Total Discrepancies: 1
+  📝 Audit Location     : `groovy-scarab-502011-g2.Finance.validation_mismatches_customer`
+=========================================================
+
+
+🔍 Fetching mismatch records from this validation run...
+
+=========================================================
+📁 DETAILED ROW-LEVEL MISMATCHES FOR THIS RUN (1 Records)
+=========================================================
+
+👉 RECORD #1
+  🔑 Primary Key Value : {"id":2}
+  ❌ Mismatch Type     : MISSING_IN_TARGET
+  🌐 Source Hash       : 0532b97c35b3a7fe894558d615602c21dc99b50ce4152bfcd42b493f9405543e
+  🌐 Target Hash       : None
+  📦 Record Payloads (JSON Structs):
+     {"source_record":{"first_name":"Chaim","last_name":"Batcheldor","email":"cbatcheldor1@businessweek.com","gender":"Agender","timestamp":"2024-06-29"},"target_record":null}
+=========================================================
+
+💾 End-to-End run logged successfully! You can find the log output file locally at:
+   📂 DVT_Results.txt
+
