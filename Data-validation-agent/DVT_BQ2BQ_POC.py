@@ -4,7 +4,7 @@ from google.cloud import bigquery
 from google.cloud.exceptions import NotFound
 
 # =====================================================================
-# 1. SPECIFIC CONFIGURATION (Updated for your tables)
+# 1. SPECIFIC CONFIGURATION
 # =====================================================================
 PROJECT_ID = "groovy-scarab-502011-g2"
 
@@ -17,12 +17,12 @@ TGT_DATASET = "Finance"
 TGT_TABLE_NAME = "Customer"
 
 # Mismatch / Audit Table Details
-# (Will be generated inside your Finance dataset as validation_mismatches_customer)
+# (Will be generated inside your Finance dataset)
 AUDIT_DATASET = "Finance"
 AUDIT_TABLE_NAME = "validation_mismatches_customer"
 
-# Primary Key Column(s) - UPDATE this if your primary key column has a different name
-PRIMARY_KEYS = ["customer_id"]  
+# Primary Key Column(s) - Updated to 'id'
+PRIMARY_KEYS = ["id"]  
 
 # =====================================================================
 # 2. HELPER UTILITIES
@@ -265,4 +265,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
