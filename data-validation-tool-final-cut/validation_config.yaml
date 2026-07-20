@@ -1,0 +1,43 @@
+project_id: "groovy-scarab-502011-g2"
+teradata_conn_id: "teradata_default"
+
+gcs:
+  bucket_name: "groovy-scarab-502011-g2-validation-logs"
+  object_name: "data-validation/DVT_Test_Results.txt"
+
+audit:
+  dataset: "Finance"
+  table_name: "data_validation_mismatches"
+
+# Define multiple tables here
+tables:
+  # --- Table 1: Customer ---
+  - source:
+      database: "Source_Db"
+      table_name: "Customer"
+    target:
+      dataset: "Finance"
+      table_name: "Customer"
+    primary_keys:
+      - "id"
+
+  # --- Table 2: Orders (Composite Primary Key) ---
+  - source:
+      database: "Source_Db"
+      table_name: "Orders"
+    target:
+      dataset: "Finance"
+      table_name: "Orders"
+    primary_keys:
+      - "order_id"
+      - "order_date"
+
+  # --- Table 3: Transactions ---
+  - source:
+      database: "Source_Db"
+      table_name: "Transactions"
+    target:
+      dataset: "Finance"
+      table_name: "Customer_Transactions"
+    primary_keys:
+      - "txn_id"
